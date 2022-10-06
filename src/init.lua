@@ -40,11 +40,6 @@ local function getNetworkerOrError(api, networkerType)
 end
 
 if RunService:IsServer() then
-	Networker.CreateNetworker = function(api, networkerType)
-		assert(networkerTypeNameEnding[networkerType], networkerType .. " is not a valid NetworkerType")
-		createNetworker(api, networkerType)
-	end
-
 	Networker.OnEvent = function(api, func)
 		local networker = getNetworker(api, "RemoteEvent")
 		if not networker then
@@ -138,7 +133,10 @@ else
 	end
 end
 
-Networker.CreateNetworker = createNetworker
+Networker.createNetworker = function(api, networkerType)
+	assert(networkerTypeNameEnding[networkerType], networkerType .. " is not a valid NetworkerType")
+	createNetworker(api, networkerType)
+end
 Networker.getNetworker = getNetworker
 Networker.getNetworkerOrError = getNetworkerOrError
 

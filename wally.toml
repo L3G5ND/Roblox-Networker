@@ -1,7 +1,7 @@
 [package]
 name = "l3g5nd/networker"
 description = "An easy to use Networking library for Roblox Lua."
-version = "1.0.0"
+version = "1.1.0"
 license = "Apache-2.0"
 authors = ["L3G5ND"]
 registry = "https://github.com/UpliftGames/wally-index"
