@@ -1,0 +1,28 @@
+{
+    "name": "Networker Testing",
+    "tree": {
+      "$className": "DataModel",
+  
+      "ReplicatedStorage": {
+        "$ignoreUnknownInstances": false,
+        "Networker": {
+          "$path": "src"
+        }
+      },
+  
+      "ServerScriptService": {
+        "Tests": {
+          "$path": "Tests/Server"
+        }
+      },
+  
+      "StarterPlayer": {
+        "StarterPlayerScripts": {
+          "$ignoreUnknownInstances": false,
+          "Tests": {
+            "$path": "Tests/Client"
+          }
+        }
+      }
+    }
+  }
