@@ -1,0 +1,12 @@
+{
+	"name": "Networker Publish",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+            "Networker": {
+                "$path": "default.project.json"
+            }
+		}
+	}
+}

@@ -2,11 +2,39 @@
     "name": "Networker Testing",
     "tree": {
       "$className": "DataModel",
+
+      "Workspace": {
+        "Baseplate": {
+          "$className": "Part",
+          "$properties": {
+            "Anchored": true,
+            "Color": [
+              0.38823,
+              0.37254,
+              0.38823
+            ],
+            "Locked": true,
+            "Position": [
+              0,
+              -5,
+              0
+            ],
+            "Size": [
+              512,
+              20,
+              512
+            ]
+          }
+        }
+      },
   
       "ReplicatedStorage": {
-        "$ignoreUnknownInstances": false,
+        "$ignoreUnknownInstances": true,
         "Networker": {
           "$path": "src"
+        },
+        "Settings": {
+          "$path": "Tests/Settings.lua"
         }
       },
   
@@ -18,7 +46,7 @@
   
       "StarterPlayer": {
         "StarterPlayerScripts": {
-          "$ignoreUnknownInstances": false,
+          "$ignoreUnknownInstances": true,
           "Tests": {
             "$path": "Tests/Client"
           }
