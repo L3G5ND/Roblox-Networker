@@ -288,7 +288,7 @@ function ServerRemote:_handleInboundRequest(plr, request)
 
 	if eventType == 1 then
 		for _, connection in self._connections do
-			connection._metadata.callback(table.unpack(args))
+			connection._metadata.callback(plr, table.unpack(args))
 		end
 	elseif eventType == 2 then
 		local _, e = string.find(request[2], "^" .. InvokeSymbol)
