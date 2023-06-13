@@ -293,7 +293,7 @@ function ServerRemote:_handleInboundRequest(plr, request)
 	elseif eventType == 2 then
 		local _, e = string.find(request[2], "^" .. InvokeSymbol)
 		local id = string.sub(request[2], e + 1, request[2]:len())
-		local args = self._onInvoke and { self._onInvoke(table.unpack(args)) } or {}
+		local args = self._onInvoke and { self._onInvoke(plr, table.unpack(args)) } or {}
 		table.insert(ServerRemote._sendQueue, {
 			isImportant = true,
 			invokeResponse = true,
