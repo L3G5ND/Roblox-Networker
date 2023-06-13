@@ -25,9 +25,9 @@ local idToSymbols = {}
 local symbolToId = {}
 local symbolsNum = 0
 
-local CrossSymbol = {}
+local Symbol = {}
 
-function CrossSymbol.create(id)
+function Symbol.create(id)
 	Assert(isServer, "You can only create symbols on the client")
 	Assert(idToSymbols[id] == nil, "Invalid argument #1 (Symbol already exists)")
 	Assert(symbolsNum <= 65535, "Maximum symbols created")
@@ -44,27 +44,27 @@ function CrossSymbol.create(id)
 	return symbol
 end
 
-function CrossSymbol.waitForSymbol(id)
+function Symbol.waitForSymbol(id)
 	while not idToSymbols[id] do
 		task.wait()
 	end
 	return idToSymbols[id]
 end
-CrossSymbol.waitFor = CrossSymbol.waitForSymbol
+Symbol.waitFor = Symbol.waitForSymbol
 
-function CrossSymbol.waitForId(symbol)
+function Symbol.waitForId(symbol)
 	while not symbolToId[symbol] do
 		task.wait()
 	end
 	return symbolToId[symbol]
 end
 
-function CrossSymbol.getSymbol(id)
+function Symbol.getSymbol(id)
 	return idToSymbols[id]
 end
-CrossSymbol.get = CrossSymbol.getSymbol
+Symbol.get = Symbol.getSymbol
 
-function CrossSymbol.getId(symbol)
+function Symbol.getId(symbol)
 	return symbolToId[symbol]
 end
 
@@ -88,4 +88,4 @@ else
 	end)
 end
 
-return CrossSymbol
+return Symbol

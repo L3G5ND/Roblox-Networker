@@ -1,11 +1,13 @@
 local RunService = game:GetService("RunService")
 
-local networker = RunService:IsServer() and require(script.Server) or require(script.Client)
+local Remote = RunService:IsServer() and require(script.ServerRemote) or require(script.ClientRemote)
 
 local NetworkerAPI = {}
 
-NetworkerAPI.new = networker.new
+NetworkerAPI.new = Remote.new
 
-NetworkerAPI.symbol = require(script.CrossSymbol)
+NetworkerAPI.DropMiddleware = Remote.DropMiddleware
+
+NetworkerAPI.symbol = require(script.Symbol)
 
 return NetworkerAPI

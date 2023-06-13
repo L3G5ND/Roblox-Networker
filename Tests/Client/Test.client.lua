@@ -12,7 +12,19 @@ if Settings.StressTest then
         remote:Connect(function() end)
     end
 else
-    local remote = Networker.new('TestRemote')
+    local remote = Networker.new('TestRemote', {
+        rate = 5,
+        inboundMiddleware = {
+            function(...)
+                return ...
+            end,
+        },
+        outboundMiddleware = {
+            function(...)
+                return ...
+            end,
+        }
+    })
     remote:OnInvoke(function(a, b, c)
         print('[Invoke]', a, b, c)
         return c, b, a
@@ -27,6 +39,6 @@ else
     remote:Fire('Fire 1 from client')
     remote:Fire('Fire 2 from client')
     print('[Invoke]', remote:Invoke('a', 'b', 'c'))
-
-    print('-------------------------------------')
+    task.wait()
+    remote:Fire('Fire 3 from client')
 end

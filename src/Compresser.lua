@@ -6,15 +6,15 @@ local Assert = require(Util.Assert)
 local Copy = require(Util.Copy)
 local DeepEqual = require(Util.DeepEqual)
 
-local CrossSymbol = require(script.Parent.CrossSymbol)
+local Symbol = require(script.Parent.Symbol)
 
 local isServer = RunService:IsServer()
 
 local compresserId
 if isServer then
-	compresserId = CrossSymbol.create("Compresser")
+	compresserId = Symbol.create("Compresser")
 else
-	compresserId = CrossSymbol.get("Compresser")
+	compresserId = Symbol.get("Compresser")
 end
 
 local function fromHex(input)
@@ -45,13 +45,15 @@ function Compresser.compress(input)
 					continue
 				end
 				if DeepEqual(requestCopy, otherRequest) then
-					compressedLength += 1
+					compressedLength = math.min(compressedLength + 1, 65535)
 					input[otherKey] = nil
 					if not compresserIndex then
 						compresserIndex = #request + 1
 						request[compresserIndex] = compresserId
 					end
-					request[compresserIndex] = compresserId .. string.pack("H", compressedLength)
+					if compressedLength <= compressedLength then
+						request[compresserIndex] = compresserId .. string.pack("H", compressedLength)
+					end
 				end
 			end
 		end
