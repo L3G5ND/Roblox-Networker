@@ -133,6 +133,14 @@ function ClientRemote:setOutboundMiddleware(table)
 	self._outboundMiddleware = table
 end
 
+function ClientRemote:getSelf()
+	local tbl = {}
+	for key, value in self do
+		tbl[key] = value
+	end
+	return tbl
+end
+
 function ClientRemote:Destroy()
 	ClientRemote._remotes[self._name] = nil
 	for _, connection in self._connections do

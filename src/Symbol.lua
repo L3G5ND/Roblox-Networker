@@ -29,8 +29,11 @@ local Symbol = {}
 
 function Symbol.create(id)
 	Assert(isServer, "You can only create symbols on the client")
-	Assert(idToSymbols[id] == nil, "Invalid argument #1 (Symbol already exists)")
 	Assert(symbolsNum <= 65535, "Maximum symbols created")
+
+	if idToSymbols[id] then
+		return idToSymbols[id]
+	end
 
 	symbolsNum += 1
 
