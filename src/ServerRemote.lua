@@ -215,7 +215,7 @@ function ServerRemote:_connect(callback, isImportant)
 	return connection
 end
 
-function ServerRemote:_handleOutboundRequest(request, addToPayload)
+function ServerRemote:_handleOutboundRequest(request)
 	if not self._isAlive then
 		return
 	end
@@ -229,10 +229,23 @@ function ServerRemote:_handleOutboundRequest(request, addToPayload)
 		table.insert(data, InvokeResponseSymbol .. request.id)
 	end
 
+	local clients = {}
+	if request.clients == "all" then
+		for _, client in Players:GetPlayers() do
+			table.insert(clients, client)
+		end
+	elseif typeof(request.clients) == "table" then
+		for _, client in clients do
+			table.insert(clients, client)
+		end
+	elseif typeof(request.clients) == "Instance" and request.clients.ClassName == "Player" then
+		table.insert(clients, request.clients)
+	end
+
 	local args = request.args
 	if self._outboundMiddleware and #self._outboundMiddleware > 0 then
 		for _, callback in self._outboundMiddleware do
-			local result = { callback(table.unpack(args)) }
+			local result = { callback(clients, table.unpack(args)) }
 			if result[1] == DropMiddlewareMarker then
 				return
 			end
@@ -243,20 +256,9 @@ function ServerRemote:_handleOutboundRequest(request, addToPayload)
 		table.insert(data, arg)
 	end
 
-	local clients = request.clients
-	if clients == "all" then
-		for _, client in Players:GetPlayers() do
-			addToPayload(client, data)
-		end
-	elseif typeof(clients) == "table" then
-		for _, client in clients do
-			addToPayload(client, data)
-		end
-	elseif typeof(clients) == "Instance" and clients.ClassName == "Player" then
-		addToPayload(clients, data)
-	end
-
 	request.didSend = true
+
+	return clients, data
 end
 
 function ServerRemote:_handleInboundRequest(plr, request)
@@ -278,7 +280,7 @@ function ServerRemote:_handleInboundRequest(plr, request)
 	local args = table.move(request, argPos, #request, 1, {})
 	if self._inboundMiddleware and #self._inboundMiddleware > 0 then
 		for _, callback in self._inboundMiddleware do
-			local result = { callback(table.unpack(args)) }
+			local result = { callback(plr, table.unpack(args)) }
 			if result[1] == DropMiddlewareMarker then
 				return
 			end
@@ -314,13 +316,6 @@ RunService.Heartbeat:Connect(function()
 	local pendingQueue = {}
 	local payloads = {}
 
-	local function addToPayload(client, data)
-		if not payloads[client] then
-			payloads[client] = {}
-		end
-		table.insert(payloads[client], data)
-	end
-
 	for _, request in ServerRemote._sendQueue do
 		local remote = request.remote
 		if not request.isImportant then
@@ -331,9 +326,20 @@ RunService.Heartbeat:Connect(function()
 				end
 			end
 		end
-		task.spawn(function()
-			remote:_handleOutboundRequest(request, addToPayload)
-		end)
+
+		local clients, data
+		local success = pcall(function()
+			clients, data = remote:_handleOutboundRequest(request)
+		end, function() end)
+
+		if success then
+			for _, client in clients do
+				if not payloads[client] then
+					payloads[client] = {}
+				end
+				table.insert(payloads[client], data)
+			end
+		end
 	end
 
 	for _, request in ServerRemote._sendQueue do
@@ -355,7 +361,7 @@ end)
 networkerRemote.OnServerEvent:Connect(function(plr, payload)
 	payload = Compresser.decompress(payload)
 	for _, request in payload do
-		task.spawn(function()
+		pcall(function()
 			local remote = ServerRemote.getRemote(Symbol.getId(request[1]))
 			if remote then
 				remote:_handleInboundRequest(plr, request)

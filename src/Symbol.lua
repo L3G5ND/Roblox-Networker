@@ -28,12 +28,12 @@ local symbolsNum = 0
 local Symbol = {}
 
 function Symbol.create(id)
-	Assert(isServer, "You can only create symbols on the client")
-	Assert(symbolsNum <= 65535, "Maximum symbols created")
-
 	if idToSymbols[id] then
 		return idToSymbols[id]
 	end
+
+	Assert(symbolsNum <= 65535, "Maximum symbols created")
+	Assert(isServer, "You can only create symbols on the client")
 
 	symbolsNum += 1
 

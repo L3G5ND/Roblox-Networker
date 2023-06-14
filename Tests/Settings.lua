@@ -1,4 +1,4 @@
 return {
-    StressTest = true,
+    StressTest = false,
     NativeNetworking = false
 }

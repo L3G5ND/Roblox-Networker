@@ -28,19 +28,19 @@ else
     local remote = Networker.new('TestRemote', {
         rate = 5,
         inboundMiddleware = {
-            function(...)
+            function(player, ...)
                 return ...
             end,
         },
         outboundMiddleware = {
-            function(...)
+            function(players, ...)
                 return ...
             end,
         }
     })
     Players.PlayerAdded:Connect(function(plr)
-        remote:OnInvoke(function(a, b, c)
-            print('[Invoke]', a, b, c)
+        remote:OnInvoke(function(plr, a, b, c)
+            print('[Invoke]', plr, a, b, c)
             return c, b, a
         end)
         remote:Connect(function(...)

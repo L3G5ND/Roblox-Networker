@@ -171,7 +171,7 @@ function ClientRemote:_connect(callback, isImportant)
 	return connection
 end
 
-function ClientRemote:_handleOutboundRequest(request, addToPayload)
+function ClientRemote:_handleOutboundRequest(request)
 	if not self._isAlive then
 		return
 	end
@@ -199,9 +199,9 @@ function ClientRemote:_handleOutboundRequest(request, addToPayload)
 		table.insert(data, arg)
 	end
 
-	addToPayload(data)
-
 	request.didSend = true
+
+	return data
 end
 
 function ClientRemote:_handleInboundRequest(request)
@@ -258,10 +258,6 @@ RunService.Heartbeat:Connect(function()
 	local pendingQueue = {}
 	local payload = {}
 
-	local function addToPayload(data)
-		table.insert(payload, data)
-	end
-
 	for _, request in ClientRemote._sendQueue do
 		local remote = request.remote
 		if not request.isImportant then
@@ -272,9 +268,15 @@ RunService.Heartbeat:Connect(function()
 				end
 			end
 		end
-		task.spawn(function()
-			request.remote:_handleOutboundRequest(request, addToPayload)
+
+		local data
+		local success = pcall(function()
+			data = request.remote:_handleOutboundRequest(request)
 		end)
+
+		if success then
+			table.insert(payload, data)
+		end
 	end
 
 	for _, request in ClientRemote._sendQueue do
@@ -296,7 +298,7 @@ end)
 networkerRemote.OnClientEvent:Connect(function(payload)
 	payload = Compresser.decompress(payload)
 	for _, request in payload do
-		task.spawn(function()
+		pcall(function()
 			local remote = ClientRemote.getRemote(Symbol.getId(request[1]))
 			if remote then
 				remote:_handleInboundRequest(request)

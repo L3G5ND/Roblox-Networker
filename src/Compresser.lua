@@ -1,4 +1,3 @@
-local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 
 local Util = script.Parent.Util
@@ -8,14 +7,7 @@ local DeepEqual = require(Util.DeepEqual)
 
 local Symbol = require(script.Parent.Symbol)
 
-local isServer = RunService:IsServer()
-
-local compresserId
-if isServer then
-	compresserId = Symbol.create("Compresser")
-else
-	compresserId = Symbol.get("Compresser")
-end
+local dupeRequestymbol = Symbol.create("DupeRequest")
 
 local function fromHex(input)
 	return string.gsub(input, "..", function(hex)
@@ -31,55 +23,55 @@ end
 
 local Compresser = {}
 
-function Compresser.compress(input)
-	Assert(typeof(input) == "table", "Invalid argument #1 (must be a 'table')")
-	input = Copy(input)
-	local searchedKeys = {}
-	for key, request in input do
-		local compresserIndex
+function Compresser.compress(payload)
+	Assert(typeof(payload) == "table", "Invalid argument #1 (must be a 'table')")
+	local compressedPayload = Copy(payload)
+	local searchedIndexes = {}
+	for index, request in compressedPayload do
+		local compresserIndex = #request + 1
 		local compressedLength = 1
 		if typeof(request) == "table" then
 			local requestCopy = Copy(request)
-			for otherKey, otherRequest in input do
-				if table.find(searchedKeys, otherKey) or otherKey == key or typeof(otherRequest) ~= "table" then
+			for otherIndex, otherRequest in compressedPayload do
+				if
+					table.find(searchedIndexes, otherIndex)
+					or otherIndex == index
+					or typeof(otherRequest) ~= "table"
+				then
 					continue
 				end
 				if DeepEqual(requestCopy, otherRequest) then
+					compressedPayload[otherIndex] = nil
 					compressedLength = math.min(compressedLength + 1, 65535)
-					input[otherKey] = nil
-					if not compresserIndex then
-						compresserIndex = #request + 1
-						request[compresserIndex] = compresserId
-					end
-					if compressedLength <= compressedLength then
-						request[compresserIndex] = compresserId .. string.pack("H", compressedLength)
-					end
 				end
 			end
 		end
-		table.insert(searchedKeys, key)
+		if compressedLength > 1 then
+			request[compresserIndex] = dupeRequestymbol .. string.pack("H", compressedLength)
+		end
+		table.insert(searchedIndexes, index)
 	end
-	return input
+	return compressedPayload
 end
 
-function Compresser.decompress(input)
-	local output = {}
-	for key, request in input do
+function Compresser.decompress(compressedPayload)
+	local decompressedPayload = {}
+	for index, request in compressedPayload do
 		local num = 1
 		for argIndex, arg in request do
 			if typeof(arg) == "string" then
-				local s, e = string.find(arg, compresserId)
+				local s, e = string.find(arg, dupeRequestymbol)
 				if s and s == 1 then
 					num = string.unpack("H", string.sub(arg, e + 1))
 					request[argIndex] = nil
 				end
 			end
 			for i = 0, num - 1 do
-				output[key + i] = request
+				decompressedPayload[index + i] = request
 			end
 		end
 	end
-	return output
+	return decompressedPayload
 end
 
 function Compresser.createUUID()
