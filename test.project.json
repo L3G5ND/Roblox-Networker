@@ -29,7 +29,6 @@
       },
   
       "ReplicatedStorage": {
-        "$ignoreUnknownInstances": true,
         "Networker": {
           "$path": "src"
         },
@@ -46,7 +45,6 @@
   
       "StarterPlayer": {
         "StarterPlayerScripts": {
-          "$ignoreUnknownInstances": true,
           "Tests": {
             "$path": "Tests/Client"
           }

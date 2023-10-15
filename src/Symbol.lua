@@ -33,7 +33,7 @@ function Symbol.create(id)
 	end
 
 	Assert(symbolsNum <= 65535, "Maximum symbols created")
-	Assert(isServer, "You can only create symbols on the client")
+	Assert(isServer, "You can only create symbols on the server")
 
 	symbolsNum += 1
 
@@ -79,9 +79,10 @@ if not isServer then
 			for id, symbol in idToSymbols do
 				symbolToId[symbol] = id
 			end
+			task.spawn(thread)
+		else
+			idToSymbols[arg1] = arg2
 		end
-		idToSymbols[arg1] = arg2
-		task.spawn(thread)
 	end)
 	symbolRemote:FireServer()
 	coroutine.yield()
