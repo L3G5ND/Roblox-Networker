@@ -298,7 +298,7 @@ end)
 networkerRemote.OnClientEvent:Connect(function(payload)
 	payload = Compresser.decompress(payload)
 	for _, request in payload do
-		pcall(function()
+		task.spawn(function()
 			local remote = ClientRemote.getRemote(Symbol.getId(request[1]))
 			if remote then
 				remote:_handleInboundRequest(request)

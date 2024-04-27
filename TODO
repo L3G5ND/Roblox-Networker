@@ -1,3 +1,3 @@
 add .is method
-add timeout errors for yielding
-remove \'
+add timeout errors for yielding on client and maybe server
+remove forced network initialization

@@ -75,11 +75,11 @@ function Compresser.decompress(compressedPayload)
 end
 
 function Compresser.createUUID()
-	return string.gsub(HttpService:GenerateGUID(false), "-", "")
+	return string.gsub(string.upper(HttpService:GenerateGUID(false)), "-", "")
 end
 
 function Compresser.compressUUID(id)
-	return fromHex(id or Compresser.createId())
+	return fromHex(id)
 end
 
 function Compresser.decompressUUID(input)
