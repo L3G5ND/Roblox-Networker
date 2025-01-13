@@ -82,6 +82,7 @@ if not isServer then
 			task.spawn(thread)
 		else
 			idToSymbols[arg1] = arg2
+			symbolToId[arg2] = arg1
 		end
 	end)
 	symbolRemote:FireServer()
