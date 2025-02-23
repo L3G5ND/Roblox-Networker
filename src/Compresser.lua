@@ -41,7 +41,7 @@ function Compresser.compress(payload)
 					continue
 				end
 				if DeepEqual(requestCopy, otherRequest) then
-					compressedPayload[otherIndex] = nil
+					table.remove(compressedPayload, otherIndex)
 					compressedLength = math.min(compressedLength + 1, 65535)
 				end
 			end
